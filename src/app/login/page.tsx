@@ -1,10 +1,36 @@
 "use client";
 
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { AuthForm } from "@/components/auth/AuthForm";
-import { Briefcase } from "lucide-react";
+import { useAuthStore } from "@/stores/useAuthStore";
+import { Briefcase, Loader2 } from "lucide-react";
 
 export default function LoginPage() {
+  const { user, isLoading, initialize } = useAuthStore();
+  const router = useRouter();
+
+  useEffect(() => {
+    initialize();
+  }, [initialize]);
+
+  useEffect(() => {
+    if (!isLoading && user) {
+      router.push("/");
+    }
+  }, [user, isLoading, router]);
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-dvh">
+        <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
+
+  if (user) return null;
+
   return (
     <div className="flex flex-col items-center justify-center min-h-dvh px-4">
       <div className="w-full max-w-sm space-y-8">
